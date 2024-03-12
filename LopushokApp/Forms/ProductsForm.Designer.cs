@@ -33,7 +33,7 @@
             textBoxSearch = new TextBox();
             comboBoxSort = new ComboBox();
             comboBoxFilter = new ComboBox();
-            mainPanel = new Panel();
+            mainPanel = new FlowLayoutPanel();
             panel0 = new Panel();
             labelCost = new Label();
             labelMaterials = new Label();
@@ -80,7 +80,7 @@
             comboBoxSort.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             comboBoxSort.FormattingEnabled = true;
             comboBoxSort.Items.AddRange(new object[] { "Не выбрано", "Наименование (по возрастанию)", "Наименование (по убыванию)", "Номер цеха (по возрастанию)", "Номер цеха (по убыванию)", "Минимальная стоимость (по возрастанию)", "Минимальная стоимость (по убыванию)" });
-            comboBoxSort.Location = new Point(544, 125);
+            comboBoxSort.Location = new Point(549, 125);
             comboBoxSort.Margin = new Padding(3, 6, 3, 6);
             comboBoxSort.Name = "comboBoxSort";
             comboBoxSort.Size = new Size(209, 45);
@@ -93,7 +93,7 @@
             comboBoxFilter.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             comboBoxFilter.FormattingEnabled = true;
             comboBoxFilter.Items.AddRange(new object[] { "Все типы" });
-            comboBoxFilter.Location = new Point(780, 125);
+            comboBoxFilter.Location = new Point(785, 125);
             comboBoxFilter.Margin = new Padding(3, 6, 3, 6);
             comboBoxFilter.Name = "comboBoxFilter";
             comboBoxFilter.Size = new Size(209, 45);
@@ -108,7 +108,7 @@
             mainPanel.Font = new Font("Gabriola", 12F, FontStyle.Regular, GraphicsUnit.Point);
             mainPanel.Location = new Point(42, 211);
             mainPanel.Name = "mainPanel";
-            mainPanel.Size = new Size(993, 527);
+            mainPanel.Size = new Size(998, 392);
             mainPanel.TabIndex = 13;
             // 
             // panel0
@@ -121,15 +121,16 @@
             panel0.Controls.Add(labelVendorCode);
             panel0.Location = new Point(41, 211);
             panel0.Name = "panel0";
-            panel0.Size = new Size(948, 168);
+            panel0.Size = new Size(978, 168);
             panel0.TabIndex = 14;
             panel0.Visible = false;
             // 
             // labelCost
             // 
+            labelCost.Anchor = AnchorStyles.Right;
             labelCost.AutoSize = true;
             labelCost.Font = new Font("Gabriola", 13.8F, FontStyle.Regular, GraphicsUnit.Point);
-            labelCost.Location = new Point(824, 22);
+            labelCost.Location = new Point(854, 22);
             labelCost.Name = "labelCost";
             labelCost.Size = new Size(107, 42);
             labelCost.TabIndex = 4;
@@ -147,6 +148,7 @@
             // 
             labelProductTypeName.AutoSize = true;
             labelProductTypeName.Font = new Font("Gabriola", 16.2F, FontStyle.Regular, GraphicsUnit.Point);
+            labelProductTypeName.ForeColor = Color.Black;
             labelProductTypeName.Location = new Point(153, 13);
             labelProductTypeName.Name = "labelProductTypeName";
             labelProductTypeName.Size = new Size(378, 51);
@@ -175,7 +177,7 @@
             // 
             buttonChangeCost.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             buttonChangeCost.BackColor = Color.Cyan;
-            buttonChangeCost.Location = new Point(41, 779);
+            buttonChangeCost.Location = new Point(41, 644);
             buttonChangeCost.Name = "buttonChangeCost";
             buttonChangeCost.Size = new Size(239, 46);
             buttonChangeCost.TabIndex = 15;
@@ -188,7 +190,7 @@
             // 
             buttonAddProduct.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             buttonAddProduct.BackColor = Color.Cyan;
-            buttonAddProduct.Location = new Point(41, 850);
+            buttonAddProduct.Location = new Point(41, 715);
             buttonAddProduct.Name = "buttonAddProduct";
             buttonAddProduct.Size = new Size(239, 46);
             buttonAddProduct.TabIndex = 16;
@@ -201,7 +203,7 @@
             label1.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             label1.AutoSize = true;
             label1.Font = new Font("Gabriola", 13.8F, FontStyle.Regular, GraphicsUnit.Point);
-            label1.Location = new Point(866, 852);
+            label1.Location = new Point(871, 717);
             label1.Name = "label1";
             label1.Size = new Size(23, 42);
             label1.TabIndex = 17;
@@ -213,7 +215,7 @@
             label2.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             label2.AutoSize = true;
             label2.Font = new Font("Gabriola", 13.8F, FontStyle.Regular, GraphicsUnit.Point);
-            label2.Location = new Point(895, 852);
+            label2.Location = new Point(900, 717);
             label2.Name = "label2";
             label2.Size = new Size(26, 42);
             label2.TabIndex = 18;
@@ -225,7 +227,7 @@
             label3.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             label3.AutoSize = true;
             label3.Font = new Font("Gabriola", 13.8F, FontStyle.Regular, GraphicsUnit.Point);
-            label3.Location = new Point(927, 852);
+            label3.Location = new Point(932, 717);
             label3.Name = "label3";
             label3.Size = new Size(26, 42);
             label3.TabIndex = 19;
@@ -237,7 +239,7 @@
             label4.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             label4.AutoSize = true;
             label4.Font = new Font("Gabriola", 13.8F, FontStyle.Regular, GraphicsUnit.Point);
-            label4.Location = new Point(959, 852);
+            label4.Location = new Point(964, 717);
             label4.Name = "label4";
             label4.Size = new Size(27, 42);
             label4.TabIndex = 20;
@@ -249,7 +251,7 @@
             labelBack.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             labelBack.AutoSize = true;
             labelBack.Font = new Font("Gabriola", 13.8F, FontStyle.Regular, GraphicsUnit.Point);
-            labelBack.Location = new Point(843, 852);
+            labelBack.Location = new Point(848, 717);
             labelBack.Name = "labelBack";
             labelBack.Size = new Size(27, 42);
             labelBack.TabIndex = 21;
@@ -261,7 +263,7 @@
             labelForward.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             labelForward.AutoSize = true;
             labelForward.Font = new Font("Gabriola", 13.8F, FontStyle.Regular, GraphicsUnit.Point);
-            labelForward.Location = new Point(992, 852);
+            labelForward.Location = new Point(997, 717);
             labelForward.Name = "labelForward";
             labelForward.Size = new Size(27, 42);
             labelForward.TabIndex = 22;
@@ -273,7 +275,7 @@
             AutoScaleDimensions = new SizeF(8F, 37F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
-            ClientSize = new Size(1047, 943);
+            ClientSize = new Size(1052, 808);
             Controls.Add(labelForward);
             Controls.Add(labelBack);
             Controls.Add(label4);
@@ -290,6 +292,7 @@
             Controls.Add(pictureBox1);
             Font = new Font("Gabriola", 12F, FontStyle.Regular, GraphicsUnit.Point);
             Icon = (Icon)resources.GetObject("$this.Icon");
+            Location = new Point(20, 50);
             Margin = new Padding(3, 6, 3, 6);
             Name = "ProductsForm";
             Text = "Продукты";
@@ -309,7 +312,7 @@
         private TextBox textBoxSearch;
         private ComboBox comboBoxSort;
         private ComboBox comboBoxFilter;
-        private Panel mainPanel;
+        private FlowLayoutPanel mainPanel;
         private Panel panel0;
         private Label labelCost;
         private Label labelMaterials;

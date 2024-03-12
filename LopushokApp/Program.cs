@@ -18,15 +18,15 @@ namespace LopushokApp
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            Form0 = new ApplicationContext(new AuthorizationForm());
+            Form0 = new ApplicationContext(new ProductsForm(1));
             Application.Run(Form0);
         }
 
         public static void ChangeForm(Form oldForm, Form newForm)
         {
             Form0.MainForm = newForm;
-            oldForm.Close();
             Form0.MainForm.Show();
+            oldForm.Close();
         }
     }
 }

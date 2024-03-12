@@ -1,27 +1,20 @@
 ﻿using Npgsql;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace LopushokApp
 {
     public partial class ChangeCostForm : Form
     {
-        List<int> productsId;
-        public ChangeCostForm(List<int> productsId)
+        public ChangeCostForm()
         {
-            this.productsId = productsId;
             InitializeComponent();
             textBoxNumber.Text = GetAverageCostProduct().ToString("0.00");
             textBoxNumber.KeyPress += TextBoxNumber_KeyPress;
             buttonChangeCost.Click += ButtonChangeCost_Click;
+        }
+
+        public string Cost
+        {
+            get { return textBoxNumber.Text; }
         }
 
         private decimal GetAverageCostProduct()
@@ -42,30 +35,18 @@ namespace LopushokApp
             return result;
         }
 
-        private void UpdateCostProduct(decimal sum)
-        {
-            Program.con.Open();
-            var cmd = new NpgsqlCommand($"update product set mincostforagent = mincostforagent +{sum.ToString("0.00", CultureInfo.GetCultureInfo("en_US"))} where id in ({string.Join(", ", productsId)})", Program.con);
-            cmd.ExecuteNonQuery();
-            Program.con.Close();
-        }
-
-
         private void ButtonChangeCost_Click(object? sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(textBoxNumber.Text))
-                MessageBox.Show("Сообщение","Введите числовое значение!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Введите числовое значение!", "Пустое поле", MessageBoxButtons.OK, MessageBoxIcon.Information);
             else
-            {
-                UpdateCostProduct(Decimal.Parse(textBoxNumber.Text));
-                Close();
-            }
+                DialogResult = DialogResult.OK;
         }
 
         private void TextBoxNumber_KeyPress(object? sender, KeyPressEventArgs e)
         {
             if (!char.IsDigit(e.KeyChar) && e.KeyChar != ',' && !Char.IsControl(e.KeyChar))
-                e.Handled=true;
+                e.Handled = true;
         }
     }
 }

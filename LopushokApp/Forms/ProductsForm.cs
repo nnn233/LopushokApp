@@ -1,5 +1,6 @@
 ﻿using LopushokApp.Entities;
 using Npgsql;
+using System.Globalization;
 
 namespace LopushokApp
 {
@@ -20,6 +21,12 @@ namespace LopushokApp
             LoadProducts(GetProducts());
             label1.Font = new Font(label1.Font, FontStyle.Underline);
             comboBoxFilter.Items.AddRange(GetTypes());
+            SizeChanged += ProductsForm_SizeChanged;
+        }
+
+        private void ProductsForm_SizeChanged(object? sender, EventArgs e)
+        {
+            LoadProducts(GetProductsWithSelection());
         }
 
         private void LoadProducts(List<Product> list)
@@ -41,57 +48,72 @@ namespace LopushokApp
                         Name = product.Id + "",
                         BorderStyle = BorderStyle.FixedSingle,
                         AutoSize = true,
-                        MinimumSize = new Size(948, 0),
-                        MaximumSize = new Size(948, 0),
+                        MinimumSize = new Size(mainPanel.Size.Width - 30, 0),
+                        MaximumSize = new Size(mainPanel.Size.Width - 30, 0),
                     };
                     if (userGroup == 1)
+                    {
                         panel.MouseClick += Panel_MouseClick;
+                        panel.BackColorChanged += Panel_BackColorChanged;
+                    }
 
-                    Label title = new Label();
-                    title.Font = new Font("Gabriola", 16);
-                    title.Location = new Point(153, 13);
-                    title.Text = product.Type + " " + product.Title;
-                    title.AutoSize = true;
+                    Label title = new Label
+                    {
+                        Location = new Point(153, 13),
+                        Text = product.Type + " " + product.Title,
+                        AutoSize = true
+                    };
 
                     if (!goodSoldProducts.Contains(product.Id))
                         title.ForeColor = Color.PaleVioletRed;
                     else title.ForeColor = Color.Black;
 
-                    Label article = new Label();
-                    article.Font = new Font("Gabriola", 14);
-                    article.Text = product.Article;
-                    article.Location = new Point(153, 51);
-                    article.AutoSize = true;
-                    var picture = new PictureBox();
-                    picture.Location = new Point(23, 33);
-                    picture.SizeMode = PictureBoxSizeMode.Zoom;
-                    picture.Size = new Size(110, 94);
+                    Label article = new Label
+                    {
+                        Text = product.Article,
+                        Location = new Point(153, 51),
+                        AutoSize = true
+                    };
+                    var picture = new PictureBox
+                    {
+                        Location = new Point(23, 33),
+                        SizeMode = PictureBoxSizeMode.Zoom,
+                        Size = new Size(110, 94)
+                    };
                     if (product.Image != null)
                         picture.Image = ConvertToBitmap(product.Image);
                     else picture.Image = ConvertToBitmap("\\picture.png");
                     Label cost = new Label
                     {
-                        Font = new Font("Gabriola", 14),
-                        //Text = GetCostMaterialsByProductId(product.Id)+"",
-                        Text = product.Cost + "",
+                        Text = (GetCostMaterialsByProductId(product.Id) != 0) ? string.Format("{0:f2}", GetCostMaterialsByProductId(product.Id)) : product.Cost + "",
                         Location = new Point(824, 22),
                         AutoSize = true
                     };
                     Label materials = new Label
                     {
-                        Font = new Font("Gabriola", 12),
                         Location = new Point(153, 90),
                         AutoSize = true,
-                        MaximumSize = new Size(778, 0),
                         Text = (GetMaterialsByProductId(product.Id) == "") ? "" : "Материалы: " + GetMaterialsByProductId(product.Id)
                     };
+                    materials.MaximumSize = new Size(panel.Size.Width - materials.Location.X - 30, 0);
                     panel.Controls.AddRange(new Control[] { title, article, picture, cost, materials });
                     mainPanel.Controls.Add(panel);
-                    location = new Point(location.X, location.Y + panel.Size.Height + 10);
+                    cost.Anchor = AnchorStyles.Top | AnchorStyles.Right;
                     startIndex++;
                 }
             }
             else MessageBox.Show("В базе данных нет продуктов с указанными параметрами!");
+        }
+
+        private void Panel_BackColorChanged(object? sender, EventArgs e)
+        {
+            bool isHighlighted = false;
+            foreach (Panel item in mainPanel.Controls)
+            {
+                if (item.BackColor == Color.Green)
+                    isHighlighted = true;
+            }
+            buttonChangeCost.Visible = isHighlighted;
         }
 
         private void Panel_MouseClick(object? sender, MouseEventArgs e)
@@ -102,14 +124,6 @@ namespace LopushokApp
                 if (panel.BackColor == Color.Green)
                     panel.BackColor = Color.White;
                 else panel.BackColor = Color.Green;
-
-                bool isHighlighted = false;
-                foreach (Panel item in mainPanel.Controls)
-                {
-                    if (item.BackColor == Color.Green)
-                        isHighlighted = true;
-                }
-                buttonChangeCost.Visible = isHighlighted;
             }
             else
             {
@@ -134,17 +148,13 @@ namespace LopushokApp
             Image image;
             try
             {
-                using (Stream bmpStream = File.Open(Environment.CurrentDirectory + fileName, FileMode.Open))
-                {
-                    image = Image.FromStream(bmpStream);
-                }
+                using Stream bmpStream = File.Open(Environment.CurrentDirectory + fileName, FileMode.Open);
+                image = Image.FromStream(bmpStream);
             }
             catch (Exception _)
             {
-                using (Stream bmpStream = File.Open(Environment.CurrentDirectory + "\\picture.png", FileMode.Open))
-                {
-                    image = Image.FromStream(bmpStream);
-                }
+                using Stream bmpStream = File.Open(Environment.CurrentDirectory + "\\picture.png", FileMode.Open);
+                image = Image.FromStream(bmpStream);
             }
             return image;
         }
@@ -168,17 +178,17 @@ namespace LopushokApp
             return string.Join(", ", result);
         }
 
-        private decimal GetCostMaterialsByProductId(int id)
+        private double GetCostMaterialsByProductId(int id)
         {
             Program.con.Open();
             var cmd = new NpgsqlCommand($"select material.cost*productmaterial.count from productmaterial inner join material on productmaterial.materialid=material.id where productmaterial.productid ={id}", Program.con);
             var reader = cmd.ExecuteReader();
-            decimal result = 0;
+            double result = 0;
             if (reader.HasRows)
             {
                 while (reader.Read())
                 {
-                    result = (decimal)reader.GetValue(0);
+                    result = (double)reader.GetValue(0);
                 }
 
             }
@@ -209,7 +219,7 @@ namespace LopushokApp
         public List<Product> GetProducts()
         {
             Program.con.Open();
-            var cmd = new NpgsqlCommand("select product.*, producttype.title from product inner join producttype on product.producttypeid=producttype.id", Program.con);
+            var cmd = new NpgsqlCommand("select product.*, producttype.title from product left join producttype on product.producttypeid=producttype.id", Program.con);
             var reader = cmd.ExecuteReader();
             var result = new List<Product>();
             if (reader.HasRows)
@@ -369,18 +379,23 @@ namespace LopushokApp
                 if (item.BackColor == Color.Green)
                     ids.Add(int.Parse(item.Name));
             }
-            Form changeCost = new ChangeCostForm(ids);
-            Enabled = false;
-            changeCost.Show();
-            changeCost.FormClosed += ChangeCost_FormClosed;
+            var changeCost = new ChangeCostForm();
+            if (changeCost.ShowDialog(this) == DialogResult.OK)
+            {
+                UpdateCostProduct(Decimal.Parse(changeCost.Cost), ids);
+                LoadProducts(GetProductsWithSelection());
+                BackToFirstPage();
+            }
         }
 
-        private void ChangeCost_FormClosed(object? sender, FormClosedEventArgs e)
+        private void UpdateCostProduct(decimal sum, List<int> productsId)
         {
-            Enabled = true;
-            LoadProducts(GetProductsWithSelection());
-            BackToFirstPage();
+            Program.con.Open();
+            var cmd = new NpgsqlCommand($"update product set mincostforagent = mincostforagent +{sum.ToString("0.00", CultureInfo.GetCultureInfo("en_US"))} where id in ({string.Join(", ", productsId)})", Program.con);
+            cmd.ExecuteNonQuery();
+            Program.con.Close();
         }
+
 
         private void buttonAddProduct_Click(object sender, EventArgs e)
         {
@@ -391,9 +406,7 @@ namespace LopushokApp
         {
             if (start == 0)
                 return;
-            position--;
-            start = (position - 1) * 20;
-            LoadProducts(GetProductsWithSelection());
+            ChangePage(position - 1);
             foreach (Control control in Controls)
             {
                 if (control is Label)
@@ -409,31 +422,21 @@ namespace LopushokApp
 
         private void label2_Click(object sender, EventArgs e)
         {
-            if ((int.Parse(label2.Text) - 1) * 20 >= GetCountWithSelection())
-                return;
-            position = 2;
-            start = (position - 1) * 20;
-            LoadProducts(GetProductsWithSelection());
-            changeLabelUnderline(label2);
+            if (ChangePage(int.Parse(label2.Text)))
+                changeLabelUnderline(label2);
         }
 
         private void label1_Click(object sender, EventArgs e)
         {
-            if ((int.Parse(label1.Text) - 1) * 20 >= GetCountWithSelection())
-                return;
-            position = 1;
-            start = (position - 1) * 20;
-            LoadProducts(GetProductsWithSelection());
-            changeLabelUnderline(label1);
+            if (ChangePage(int.Parse(label1.Text)))
+                changeLabelUnderline(label1);
         }
 
         private void labelForward_Click(object sender, EventArgs e)
         {
-            if (position * 20 >= GetCountWithSelection())
-                return;
-            position++;
-            start = (position - 1) * 20;
-            LoadProducts(GetProductsWithSelection());
+            ChangePage(position + 1);
+            if (position > 4)
+                changeLabelNumbers(1);
             foreach (Control control in Controls)
             {
                 if (control is Label)
@@ -443,39 +446,35 @@ namespace LopushokApp
                             changeLabelUnderline((Label)control);
                 }
             }
-            if (position > 4)
-                changeLabelNumbers(1);
         }
 
         private void label3_Click(object sender, EventArgs e)
         {
-            if ((int.Parse(label3.Text) - 1 )* 20 >= GetCountWithSelection())
-                return;
-            position = 3;
-            start = (position - 1) * 20;
-            LoadProducts(GetProductsWithSelection());
-            changeLabelUnderline(label3);
+            if (ChangePage(int.Parse(label3.Text)))
+                changeLabelUnderline(label3);
         }
 
         private void label4_Click(object sender, EventArgs e)
         {
-            if ((int.Parse(label4.Text) - 1) * 20 >= GetCountWithSelection())
-                return;
-            position = 4;
+            if (ChangePage(int.Parse(label4.Text)))
+                changeLabelUnderline(label4);
+        }
+
+        private bool ChangePage(int pos)
+        {
+            if (pos - 1 != 0 && (pos - 1) * 20 >= GetCountWithSelection())
+                return false;
+            position = pos;
             start = (position - 1) * 20;
             LoadProducts(GetProductsWithSelection());
-            changeLabelUnderline(label4);
+            return true;
         }
 
         private void changeLabelUnderline(Label labelUnderline)
         {
             foreach (Control control in Controls)
-            {
                 if (control is Label)
-                {
                     control.Font = new Font(control.Font, FontStyle.Regular);
-                }
-            }
             labelUnderline.Font = new Font(labelUnderline.Font, FontStyle.Underline);
         }
 
@@ -489,9 +488,7 @@ namespace LopushokApp
 
         private void BackToFirstPage()
         {
-            position = 1;
-            start = (position - 1) * 20;
-            LoadProducts(GetProductsWithSelection());
+            ChangePage(1);
             changeLabelUnderline(label1);
             if (position < int.Parse(label1.Text))
                 changeLabelNumbers(1 - int.Parse(label1.Text));

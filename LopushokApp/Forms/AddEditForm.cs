@@ -6,11 +6,8 @@ namespace LopushokApp
 {
     public partial class AddEditForm : Form
     {
-        private bool isProgramEvent = false;
-        private bool isDataChanged = false;
         private int? productId = null;
         private string? filePath = null;
-        private Panel? panelForDelete;
         private readonly int userGroup;
 
         public AddEditForm(int? productId, int userGroup)
@@ -19,39 +16,54 @@ namespace LopushokApp
             this.userGroup = userGroup;
             comboBoxType.Items.Add("Не выбрано");
             comboBoxType.Items.AddRange(ProductsForm.GetTypes());
-            panelMaterials.Controls.Remove(panelExample);
+            DataGridViewComboBoxColumn comboBox = (DataGridViewComboBoxColumn)dataGridViewMaterials.Columns[1];
+            comboBox.Items.AddRange(GetMaterials());
+            dataGridViewMaterials.EditingControlShowing += DataGridViewMaterials_EditingControlShowing;
             if (productId != null)
             {
                 this.productId = productId;
                 LoadProduct();
                 buttonSave.Text = "Сохранить";
-                buttonDelete.Enabled = true;
+                buttonDelete.Visible = true;
             }
             pictureBoxImage.Click += PictureBoxImage_Click;
-            textBoxTitle.TextChanged += TextBox_TextChanged;
-            textBoxArticle.TextChanged += TextBox_TextChanged;
-            textBoxDescription.TextChanged += TextBox_TextChanged;
-            textBoxMinCost.TextChanged += TextBox_TextChanged;
-            textBoxPersonCount.TextChanged += TextBox_TextChanged;
-            textBoxWorkshopNumber.TextChanged += TextBox_TextChanged;
-            comboBoxType.SelectedIndexChanged += TextBox_TextChanged;
         }
 
-        private void TextBox_TextChanged(object? sender, EventArgs e)
+        private void DataGridViewMaterials_EditingControlShowing(object? sender, DataGridViewEditingControlShowingEventArgs e)
         {
-            if (!isProgramEvent)
-                isDataChanged = true;
+            if (e.Control is ComboBox cb)
+            {
+                cb.DropDownStyle = ComboBoxStyle.DropDown;
+                cb.IntegralHeight = false;
+                cb.MaxDropDownItems = 6;
+            }
         }
 
         private void PictureBoxImage_Click(object? sender, EventArgs e)
         {
-            isDataChanged = true;
+            ToolStripMenuItem load = new("Выбрать новое");
+            load.Click += Load_Click;
+            ToolStripMenuItem delete = new("Удалить");
+            delete.Click += Delete_Click;
+            ContextMenuStrip menu = new ContextMenuStrip();
+            menu.Items.AddRange(new ToolStripItem[] { load, delete });
+            pictureBoxImage.ContextMenuStrip = menu;
+        }
+
+        private void Delete_Click(object? sender, EventArgs e)
+        {
+            filePath = null;
+            pictureBoxImage.Image = ProductsForm.ConvertToBitmap(filePath);
+        }
+
+        private void Load_Click(object? sender, EventArgs e)
+        {
             var directory = Environment.CurrentDirectory;
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.InitialDirectory = directory;
-            dialog.ShowDialog();
+            if (dialog.ShowDialog() != DialogResult.OK)
+                return;
             filePath = dialog.FileName;
-
             filePath = filePath.Replace(directory, "");
             pictureBoxImage.Image = ProductsForm.ConvertToBitmap(filePath);
         }
@@ -59,129 +71,40 @@ namespace LopushokApp
         private void LoadProduct()
         {
             var product = GetProductById();
-            isProgramEvent = true;
             textBoxTitle.Text = product.Title;
             textBoxArticle.Text = product.Article;
             comboBoxType.SelectedIndex = (int)product.TypeId;
             textBoxPersonCount.Text = product.PersonCount + "";
             textBoxWorkshopNumber.Text = product.WorkShopNumber + "";
             textBoxMinCost.Text = product.Cost + "";
+            pictureBoxImage.Image = ProductsForm.ConvertToBitmap(product.Image);
             if (product.Image != null)
-            {
-                pictureBoxImage.Image = ProductsForm.ConvertToBitmap(product.Image);
                 filePath = product.Image;
-            }
-            else pictureBoxImage.Image = ProductsForm.ConvertToBitmap("\\picture.png");
-            textBoxDescription.Text = (product.Description != null) ? product.Description : "";
+            textBoxDescription.Text = product.Description ?? "";
             LoadMaterials();
-            isProgramEvent = false;
         }
 
         private void LoadMaterials()
         {
             var materials = GetMaterialsByProductId();
-
+            dataGridViewMaterials.Rows.Clear();
             if (materials.Count > 0)
             {
-                var location = new Point(0, 0);
                 foreach (Material item in materials)
-                {
-                    Panel panel = new Panel
-                    {
-                        Location = location,
-                        Name = item.Id + "",
-                        BorderStyle = BorderStyle.FixedSingle,
-                        Size = new Size(583, 83)
-                    };
-                    panel.MouseClick += Panel_MouseClick;
-
-                    var comboBox = new ComboBox
-                    {
-                        Location = new Point(16, 18),
-                        Size = new Size(356, 45),
-                        MaxDropDownItems = 8,
-                        IntegralHeight = false,
-                        Name = "comboBox"
-                    };
-                    comboBox.Items.AddRange(GetMaterials());
-                    comboBox.SelectedIndex = comboBox.Items.IndexOf(item.Title);
-                    comboBox.SelectedIndexChanged += ComboBox_SelectedIndexChanged;
-
-                    var textBox = new TextBox
-                    {
-                        Location = new Point(436, 22),
-                        Size = new Size(125, 41),
-                        Text = item.Count + "",
-                        Name = "textBox"
-                    };
-                    textBox.Click += TextBoxCount_Click;
-                    textBox.TextChanged += TextBoxCount_TextChanged;
-                    panel.Controls.AddRange(new Control[] { comboBox, textBox });
-                    panelMaterials.Controls.Add(panel);
-                    location = new Point(location.X, location.Y + panel.Size.Height + 10);
-                }
+                    dataGridViewMaterials.Rows.Add(item.Id, item.Title, item.Count + "");
             }
-        }
-
-        private void TextBoxCount_TextChanged(object? sender, EventArgs e)
-        {
-            if (isProgramEvent)
-                return;
-            isDataChanged = true;
-            var textBox = (TextBox)sender;
-            if (textBox.Text == "")
-                textBox.Text = "Количество";
-        }
-
-        private void TextBoxCount_Click(object? sender, EventArgs e)
-        {
-            var textBox = (TextBox)sender;
-            if (textBox.Text == "Количество")
-            {
-                isProgramEvent = true;
-                textBox.Text = "";
-                isProgramEvent = false;
-            }
-        }
-
-        private void Panel_MouseClick(object? sender, MouseEventArgs e)
-        {
-            Panel panel = (Panel)sender;
-            if (e.Button == MouseButtons.Right)
-            {
-                ContextMenuStrip contextMenu = new ContextMenuStrip();
-                ToolStripMenuItem menuItem = new("Удалить");
-                menuItem.Click += new EventHandler(DeleteMaterial);
-                contextMenu.Items.Add(menuItem);
-                panelForDelete = panel;
-                panel.ContextMenuStrip = contextMenu;
-            }
-        }
-
-        private void DeleteMaterial(object? sender, EventArgs e)
-        {
-            if (productId != null && panelForDelete.Name != "")
-                DeleteProductMaterialByMaterialId(int.Parse(panelForDelete.Name));
-            panelMaterials.Controls.Remove(panelForDelete);
-            panelForDelete = null;
         }
 
         private void buttonBack_Click(object sender, EventArgs e)
         {
-            if (isDataChanged)
-            {
-                DialogResult result = MessageBox.Show(
-                    "На страницу остались несохраненные изменения, Вы уверены, что хотите выйти?",
-                    "Несохраненные изменения",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Information);
+            DialogResult result = MessageBox.Show(
+                "Возможно на странице есть несохраненные изменения, при возврате к списку продуктов они будут утеряны, Вы уверены, что хотите уйти?",
+                "Несохраненные изменения",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Information);
 
-                if (result == DialogResult.Yes)
-                {
-                    BackToProducts();
-                }
-            }
-            else BackToProducts();
+            if (result == DialogResult.Yes)
+                BackToProducts();
         }
 
         private void BackToProducts()
@@ -199,15 +122,15 @@ namespace LopushokApp
 
             if (result == DialogResult.Yes)
             {
-                if (GetProductFromProductSale() != null)
+                try
+                {
+                    DeleteProduct();
+                    BackToProducts();
+                }
+                catch (PostgresException)
                 {
                     MessageBox.Show("Продукт не может быть удален, так существует информация о его продаже агентами!", "Ошибка удаления", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
                 }
-                DeleteProduct();
-                DeleteProductCostHistory();
-                DeleteProductMaterial();
-                BackToProducts();
             }
         }
 
@@ -235,7 +158,7 @@ namespace LopushokApp
             }
             if (!int.TryParse(textBoxArticle.Text, out int a))
             {
-                MessageBox.Show("Поле Артикул может содержать только целочисленные значения!", "Неверный ввод", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Поле Артикул может содержать только цифры!", "Неверный ввод", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
             if ((!string.IsNullOrEmpty(textBoxPersonCount.Text) && !int.TryParse(textBoxPersonCount.Text, out int p))
@@ -244,17 +167,20 @@ namespace LopushokApp
                 MessageBox.Show("Поля Количество человек для произвоздства и Номер производственного цеха могут содержать только целочисленные значения!", "Неверный ввод", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
-            foreach (Panel panel in panelMaterials.Controls)
+            foreach (DataGridViewRow row in dataGridViewMaterials.Rows)
             {
-                if (((ComboBox)panel.Controls["comboBox"]).SelectedIndex == -1 || string.IsNullOrEmpty(((TextBox)panel.Controls["textBox"]).Text))
+                if (!row.IsNewRow)
                 {
-                    MessageBox.Show("Поля с данными об используемых материалах не могут быть пустыми!", "Заполните поля", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    return;
-                }
-                if (!double.TryParse(((TextBox)panel.Controls["textBox"]).Text, out double count) && panel.Visible == true)
-                {
-                    MessageBox.Show("Поле Количество используемых материалов может содержать только числовые значения с запятой в качестве разделителя целой и десятичной частей!", "Неверный ввод", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    return;
+                    if (row.Cells[1].Value == null || string.IsNullOrEmpty((string)row.Cells[2].Value))
+                    {
+                        MessageBox.Show("Поля с данными об используемых материалах не могут быть пустыми!", "Заполните поля", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        return;
+                    }
+                    if (!double.TryParse((string)row.Cells[2].Value, out double count))
+                    {
+                        MessageBox.Show("Поле Количество используемых материалов может содержать только числовые значения с запятой в качестве разделителя целой и десятичной частей!", "Неверный ввод", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        return;
+                    }
                 }
             }
             var id = GetProductByArticle(textBoxArticle.Text);
@@ -272,12 +198,14 @@ namespace LopushokApp
                 if (productId != null)
                 UpdateProduct();
             else productId = AddProduct();
-            foreach (Panel panel in panelMaterials.Controls)
-            {
-                if (panel.Name != "panel")
-                    UpdateProductMaterial(int.Parse(panel.Name), ((ComboBox)panel.Controls["comboBox"]).GetItemText(((ComboBox)panel.Controls["comboBox"]).SelectedItem), double.Parse(((TextBox)panel.Controls["textBox"]).Text));
-                else AddProductMaterial(((ComboBox)panel.Controls["comboBox"]).GetItemText(((ComboBox)panel.Controls["comboBox"]).SelectedItem), double.Parse(((TextBox)panel.Controls["textBox"]).Text));
-            }
+            foreach (DataGridViewRow row in dataGridViewMaterials.Rows)
+                if (row.Index != dataGridViewMaterials.Rows.Count - 1)
+                {
+                    if (row.Cells[0].Value == null)
+                        AddProductMaterial((string)row.Cells[1].Value, double.Parse((string)row.Cells[2].Value));
+                    else UpdateProductMaterial((int)row.Cells[0].Value, (string)row.Cells[1].Value, double.Parse((string)row.Cells[2].Value));
+                }
+
             BackToProducts();
         }
 
@@ -359,8 +287,6 @@ namespace LopushokApp
             Program.con.Close();
             return result.ToArray();
         }
-
-
         private void UpdateProduct()
         {
             Program.con.Open();
@@ -374,6 +300,7 @@ namespace LopushokApp
             cmd.ExecuteNonQuery();
             Program.con.Close();
         }
+
         private int AddProduct()
         {
             Program.con.Open();
@@ -403,7 +330,7 @@ namespace LopushokApp
         {
             Program.con.Open();
             var cmd = new NpgsqlCommand($"update productmaterial set materialid = (select id from material where title = '{material}'), " +
-                $"count = {count} where productid = {productId} and materialid = {materialId}", Program.con);
+                $"count = {count.ToString("0.00", CultureInfo.GetCultureInfo("en-US"))} where productid = {productId} and materialid = {materialId}", Program.con);
             cmd.ExecuteNonQuery();
             Program.con.Close();
         }
@@ -412,16 +339,18 @@ namespace LopushokApp
         {
             Program.con.Open();
             var cmd = new NpgsqlCommand($"delete from product where id ={productId}", Program.con);
-            cmd.ExecuteNonQuery();
-            Program.con.Close();
-        }
-
-        private void DeleteProductMaterial()
-        {
-            Program.con.Open();
-            var cmd = new NpgsqlCommand($"delete from productmaterial where productid ={productId}", Program.con);
-            cmd.ExecuteNonQuery();
-            Program.con.Close();
+            try
+            {
+                cmd.ExecuteNonQuery();
+            }
+            catch (PostgresException e)
+            {
+                throw e;
+            }
+            finally
+            {
+                Program.con.Close();
+            }
         }
 
         private void DeleteProductMaterialByMaterialId(int id)
@@ -430,23 +359,6 @@ namespace LopushokApp
             var cmd = new NpgsqlCommand($"delete from productmaterial where productid ={productId} and materialid = {id}", Program.con);
             cmd.ExecuteNonQuery();
             Program.con.Close();
-        }
-
-        private void DeleteProductCostHistory()
-        {
-            Program.con.Open();
-            var cmd = new NpgsqlCommand($"delete from productcosthistory where productid ={productId}", Program.con);
-            cmd.ExecuteNonQuery();
-            Program.con.Close();
-        }
-
-        private int? GetProductFromProductSale()
-        {
-            Program.con.Open();
-            var cmd = new NpgsqlCommand($"select id from productsale where productid = {productId}", Program.con);
-            int? result = (int?)cmd.ExecuteScalar();
-            Program.con.Close();
-            return result;
         }
 
         private int? GetProductByArticle(string article)
@@ -458,47 +370,20 @@ namespace LopushokApp
             return result;
         }
 
-        private void buttonAddMaterial_Click(object sender, EventArgs e)
+        private void buttonDeleteMaterial_Click(object sender, EventArgs e)
         {
-            isDataChanged = true;
-            var location = new Point(0, buttonAddMaterial.Location.Y);
-            Panel panel = new Panel
-            {
-                Location = location,
-                BorderStyle = BorderStyle.FixedSingle,
-                Size = new Size(583, 83),
-                Name = "panel"
-            };
-            panel.MouseClick += Panel_MouseClick;
-
-            var comboBox = new ComboBox
-            {
-                Location = new Point(16, 18),
-                Size = new Size(356, 45),
-                MaxDropDownItems = 8,
-                IntegralHeight = false,
-                Name = "comboBox"
-            };
-            comboBox.Items.AddRange(GetMaterials());
-            comboBox.SelectedIndexChanged += ComboBox_SelectedIndexChanged;
-
-            var textBox = new TextBox
-            {
-                Location = new Point(436, 22),
-                Size = new Size(125, 41),
-                Text = "Количество",
-                Name = "textBox"
-            };
-            textBox.Click += TextBoxCount_Click;
-            textBox.TextChanged += TextBoxCount_TextChanged;
-            panel.Controls.AddRange(new Control[] { comboBox, textBox });
-            panelMaterials.Controls.Add(panel);
-            location = new Point(location.X, location.Y + panel.Size.Height + 10);
-        }
-
-        private void ComboBox_SelectedIndexChanged(object? sender, EventArgs e)
-        {
-            isDataChanged = true;
+            if (dataGridViewMaterials.SelectedRows.Count > 0)
+                foreach (DataGridViewRow row in dataGridViewMaterials.SelectedRows)
+                {
+                    var index = row.Index;
+                    if (!dataGridViewMaterials.Rows[index].IsNewRow)
+                    {
+                        var id = (int?)dataGridViewMaterials.Rows[index].Cells[0].Value;
+                        if (productId != null && id != null)
+                            DeleteProductMaterialByMaterialId((int)id);
+                        dataGridViewMaterials.Rows.RemoveAt(index);
+                    }
+                }
         }
     }
 }

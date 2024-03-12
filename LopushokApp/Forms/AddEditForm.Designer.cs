@@ -46,18 +46,17 @@
             textBoxMinCost = new TextBox();
             textBoxDescription = new TextBox();
             label8 = new Label();
-            panelMaterials = new FlowLayoutPanel();
-            panelExample = new Panel();
-            textBoxCount = new TextBox();
-            comboBoxMaterial = new ComboBox();
-            buttonAddMaterial = new Button();
             buttonDelete = new Button();
             buttonSave = new Button();
             buttonBack = new Button();
+            dataGridViewMaterials = new DataGridView();
+            Id = new DataGridViewTextBoxColumn();
+            Material = new DataGridViewComboBoxColumn();
+            Count = new DataGridViewTextBoxColumn();
+            buttonDeleteMaterial = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBoxImage).BeginInit();
-            panelMaterials.SuspendLayout();
-            panelExample.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dataGridViewMaterials).BeginInit();
             SuspendLayout();
             // 
             // pictureBox1
@@ -75,7 +74,7 @@
             // 
             label1.AutoSize = true;
             label1.Font = new Font("Gabriola", 13.8F, FontStyle.Regular, GraphicsUnit.Point);
-            label1.Location = new Point(42, 163);
+            label1.Location = new Point(41, 231);
             label1.Name = "label1";
             label1.Size = new Size(86, 42);
             label1.TabIndex = 2;
@@ -85,7 +84,7 @@
             // 
             label2.AutoSize = true;
             label2.Font = new Font("Gabriola", 13.8F, FontStyle.Regular, GraphicsUnit.Point);
-            label2.Location = new Point(42, 228);
+            label2.Location = new Point(41, 296);
             label2.Name = "label2";
             label2.Size = new Size(128, 42);
             label2.TabIndex = 3;
@@ -95,7 +94,7 @@
             // 
             label3.AutoSize = true;
             label3.Font = new Font("Gabriola", 13.8F, FontStyle.Regular, GraphicsUnit.Point);
-            label3.Location = new Point(42, 296);
+            label3.Location = new Point(41, 364);
             label3.Name = "label3";
             label3.Size = new Size(120, 42);
             label3.TabIndex = 4;
@@ -104,7 +103,7 @@
             // pictureBoxImage
             // 
             pictureBoxImage.Image = (Image)resources.GetObject("pictureBoxImage.Image");
-            pictureBoxImage.Location = new Point(913, 163);
+            pictureBoxImage.Location = new Point(986, 596);
             pictureBoxImage.Name = "pictureBoxImage";
             pictureBoxImage.Size = new Size(196, 152);
             pictureBoxImage.SizeMode = PictureBoxSizeMode.Zoom;
@@ -115,7 +114,7 @@
             // 
             label4.AutoSize = true;
             label4.Font = new Font("Gabriola", 13.8F, FontStyle.Regular, GraphicsUnit.Point);
-            label4.Location = new Point(42, 358);
+            label4.Location = new Point(41, 426);
             label4.Name = "label4";
             label4.Size = new Size(302, 42);
             label4.TabIndex = 6;
@@ -125,7 +124,7 @@
             // 
             label5.AutoSize = true;
             label5.Font = new Font("Gabriola", 13.8F, FontStyle.Regular, GraphicsUnit.Point);
-            label5.Location = new Point(42, 427);
+            label5.Location = new Point(41, 495);
             label5.Name = "label5";
             label5.Size = new Size(254, 42);
             label5.TabIndex = 7;
@@ -135,7 +134,7 @@
             // 
             label6.AutoSize = true;
             label6.Font = new Font("Gabriola", 13.8F, FontStyle.Regular, GraphicsUnit.Point);
-            label6.Location = new Point(42, 509);
+            label6.Location = new Point(41, 577);
             label6.Name = "label6";
             label6.Size = new Size(298, 42);
             label6.TabIndex = 8;
@@ -145,7 +144,7 @@
             // 
             label7.AutoSize = true;
             label7.Font = new Font("Gabriola", 13.8F, FontStyle.Regular, GraphicsUnit.Point);
-            label7.Location = new Point(42, 580);
+            label7.Location = new Point(41, 648);
             label7.Name = "label7";
             label7.Size = new Size(170, 42);
             label7.TabIndex = 9;
@@ -154,128 +153,81 @@
             // comboBoxType
             // 
             comboBoxType.FormattingEnabled = true;
-            comboBoxType.Location = new Point(360, 293);
+            comboBoxType.Location = new Point(359, 361);
             comboBoxType.Name = "comboBoxType";
-            comboBoxType.Size = new Size(268, 45);
+            comboBoxType.Size = new Size(346, 45);
             comboBoxType.TabIndex = 2;
             // 
             // textBoxArticle
             // 
-            textBoxArticle.Location = new Point(360, 163);
+            textBoxArticle.BackColor = SystemColors.Window;
+            textBoxArticle.Location = new Point(359, 231);
             textBoxArticle.Name = "textBoxArticle";
-            textBoxArticle.Size = new Size(268, 41);
+            textBoxArticle.Size = new Size(346, 41);
             textBoxArticle.TabIndex = 0;
             // 
             // textBoxPersonCount
             // 
-            textBoxPersonCount.Location = new Point(360, 358);
+            textBoxPersonCount.Location = new Point(359, 426);
             textBoxPersonCount.Name = "textBoxPersonCount";
-            textBoxPersonCount.Size = new Size(268, 41);
+            textBoxPersonCount.Size = new Size(346, 41);
             textBoxPersonCount.TabIndex = 3;
             // 
             // textBoxTitle
             // 
-            textBoxTitle.Location = new Point(360, 228);
+            textBoxTitle.Location = new Point(359, 296);
             textBoxTitle.Name = "textBoxTitle";
-            textBoxTitle.Size = new Size(268, 41);
+            textBoxTitle.Size = new Size(346, 41);
             textBoxTitle.TabIndex = 1;
             // 
             // textBoxWorkshopNumber
             // 
-            textBoxWorkshopNumber.Location = new Point(360, 427);
+            textBoxWorkshopNumber.Location = new Point(359, 495);
             textBoxWorkshopNumber.Name = "textBoxWorkshopNumber";
-            textBoxWorkshopNumber.Size = new Size(268, 41);
+            textBoxWorkshopNumber.Size = new Size(346, 41);
             textBoxWorkshopNumber.TabIndex = 4;
             // 
             // textBoxMinCost
             // 
-            textBoxMinCost.Location = new Point(360, 509);
+            textBoxMinCost.Location = new Point(359, 577);
             textBoxMinCost.Name = "textBoxMinCost";
-            textBoxMinCost.Size = new Size(268, 41);
+            textBoxMinCost.Size = new Size(346, 41);
             textBoxMinCost.TabIndex = 5;
             // 
             // textBoxDescription
             // 
-            textBoxDescription.Location = new Point(360, 580);
+            textBoxDescription.Location = new Point(359, 648);
             textBoxDescription.Multiline = true;
             textBoxDescription.Name = "textBoxDescription";
-            textBoxDescription.Size = new Size(268, 147);
+            textBoxDescription.Size = new Size(346, 132);
             textBoxDescription.TabIndex = 6;
             // 
             // label8
             // 
             label8.AutoSize = true;
             label8.Font = new Font("Gabriola", 16.2F, FontStyle.Regular, GraphicsUnit.Point);
-            label8.Location = new Point(952, 364);
+            label8.Location = new Point(756, 227);
             label8.Name = "label8";
             label8.Size = new Size(132, 51);
             label8.TabIndex = 10;
             label8.Text = "Материалы";
             // 
-            // panelMaterials
-            // 
-            panelMaterials.AutoScroll = true;
-            panelMaterials.Controls.Add(panelExample);
-            panelMaterials.Location = new Point(734, 427);
-            panelMaterials.Name = "panelMaterials";
-            panelMaterials.Size = new Size(623, 300);
-            panelMaterials.TabIndex = 11;
-            // 
-            // panelExample
-            // 
-            panelExample.Controls.Add(textBoxCount);
-            panelExample.Controls.Add(comboBoxMaterial);
-            panelExample.Location = new Point(3, 3);
-            panelExample.Name = "panelExample";
-            panelExample.Size = new Size(583, 83);
-            panelExample.TabIndex = 0;
-            panelExample.Visible = false;
-            // 
-            // textBoxCount
-            // 
-            textBoxCount.Location = new Point(436, 22);
-            textBoxCount.Name = "textBoxCount";
-            textBoxCount.Size = new Size(125, 41);
-            textBoxCount.TabIndex = 1;
-            textBoxCount.Text = "Количество";
-            // 
-            // comboBoxMaterial
-            // 
-            comboBoxMaterial.AutoCompleteSource = AutoCompleteSource.ListItems;
-            comboBoxMaterial.FormattingEnabled = true;
-            comboBoxMaterial.IntegralHeight = false;
-            comboBoxMaterial.Location = new Point(16, 18);
-            comboBoxMaterial.Name = "comboBoxMaterial";
-            comboBoxMaterial.Size = new Size(356, 45);
-            comboBoxMaterial.TabIndex = 0;
-            // 
-            // buttonAddMaterial
-            // 
-            buttonAddMaterial.BackColor = Color.Cyan;
-            buttonAddMaterial.Location = new Point(977, 733);
-            buttonAddMaterial.Name = "buttonAddMaterial";
-            buttonAddMaterial.Size = new Size(168, 45);
-            buttonAddMaterial.TabIndex = 7;
-            buttonAddMaterial.Text = "Добавить материал";
-            buttonAddMaterial.UseVisualStyleBackColor = false;
-            buttonAddMaterial.Click += buttonAddMaterial_Click;
-            // 
             // buttonDelete
             // 
             buttonDelete.BackColor = Color.Cyan;
-            buttonDelete.Enabled = false;
-            buttonDelete.Location = new Point(993, 824);
+            buttonDelete.Location = new Point(986, 116);
             buttonDelete.Name = "buttonDelete";
             buttonDelete.Size = new Size(128, 46);
             buttonDelete.TabIndex = 12;
             buttonDelete.Text = "Удалить";
             buttonDelete.UseVisualStyleBackColor = false;
+            buttonDelete.Visible = false;
             buttonDelete.Click += buttonDelete_Click;
             // 
             // buttonSave
             // 
             buttonSave.BackColor = Color.Cyan;
-            buttonSave.Location = new Point(1204, 824);
+            buttonSave.Location = new Point(1195, 116);
             buttonSave.Name = "buttonSave";
             buttonSave.Size = new Size(128, 46);
             buttonSave.TabIndex = 13;
@@ -286,7 +238,7 @@
             // buttonBack
             // 
             buttonBack.BackColor = Color.Cyan;
-            buttonBack.Location = new Point(54, 824);
+            buttonBack.Location = new Point(41, 116);
             buttonBack.Name = "buttonBack";
             buttonBack.Size = new Size(128, 46);
             buttonBack.TabIndex = 14;
@@ -294,17 +246,66 @@
             buttonBack.UseVisualStyleBackColor = false;
             buttonBack.Click += buttonBack_Click;
             // 
+            // dataGridViewMaterials
+            // 
+            dataGridViewMaterials.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dataGridViewMaterials.BackgroundColor = Color.White;
+            dataGridViewMaterials.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridViewMaterials.Columns.AddRange(new DataGridViewColumn[] { Id, Material, Count });
+            dataGridViewMaterials.Location = new Point(757, 295);
+            dataGridViewMaterials.Name = "dataGridViewMaterials";
+            dataGridViewMaterials.RowHeadersWidth = 51;
+            dataGridViewMaterials.RowTemplate.Height = 29;
+            dataGridViewMaterials.ScrollBars = ScrollBars.Vertical;
+            dataGridViewMaterials.Size = new Size(595, 247);
+            dataGridViewMaterials.TabIndex = 15;
+            // 
+            // Id
+            // 
+            Id.HeaderText = "";
+            Id.MinimumWidth = 6;
+            Id.Name = "Id";
+            Id.ReadOnly = true;
+            Id.Visible = false;
+            // 
+            // Material
+            // 
+            Material.HeaderText = "Материал";
+            Material.MinimumWidth = 6;
+            Material.Name = "Material";
+            // 
+            // Count
+            // 
+            Count.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            Count.HeaderText = "Количество";
+            Count.MinimumWidth = 6;
+            Count.Name = "Count";
+            Count.Width = 123;
+            // 
+            // buttonDeleteMaterial
+            // 
+            buttonDeleteMaterial.BackColor = Color.Cyan;
+            buttonDeleteMaterial.Location = new Point(894, 231);
+            buttonDeleteMaterial.Name = "buttonDeleteMaterial";
+            buttonDeleteMaterial.Size = new Size(183, 44);
+            buttonDeleteMaterial.TabIndex = 16;
+            buttonDeleteMaterial.Text = "Удалить материал";
+            buttonDeleteMaterial.UseVisualStyleBackColor = false;
+            buttonDeleteMaterial.Click += buttonDeleteMaterial_Click;
+            // 
             // AddEditForm
             // 
             AutoScaleDimensions = new SizeF(8F, 37F);
             AutoScaleMode = AutoScaleMode.Font;
+            AutoScroll = true;
+            AutoSize = true;
             BackColor = Color.White;
-            ClientSize = new Size(1356, 899);
-            Controls.Add(buttonAddMaterial);
+            ClientSize = new Size(1378, 808);
+            Controls.Add(buttonDeleteMaterial);
+            Controls.Add(dataGridViewMaterials);
             Controls.Add(buttonBack);
             Controls.Add(buttonSave);
             Controls.Add(buttonDelete);
-            Controls.Add(panelMaterials);
             Controls.Add(label8);
             Controls.Add(textBoxDescription);
             Controls.Add(textBoxMinCost);
@@ -325,15 +326,12 @@
             Font = new Font("Gabriola", 12F, FontStyle.Regular, GraphicsUnit.Point);
             Icon = (Icon)resources.GetObject("$this.Icon");
             Margin = new Padding(3, 6, 3, 6);
-            MaximumSize = new Size(1374, 946);
-            MinimumSize = new Size(1374, 946);
+            MinimumSize = new Size(1396, 855);
             Name = "AddEditForm";
             Text = "Добавить продукт";
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ((System.ComponentModel.ISupportInitialize)pictureBoxImage).EndInit();
-            panelMaterials.ResumeLayout(false);
-            panelExample.ResumeLayout(false);
-            panelExample.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)dataGridViewMaterials).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -357,13 +355,18 @@
         private TextBox textBoxMinCost;
         private TextBox textBoxDescription;
         private Label label8;
-        private FlowLayoutPanel panelMaterials;
-        private Panel panelExample;
-        private TextBox textBoxCount;
-        private ComboBox comboBoxMaterial;
+        // private FlowLayoutPanel panelMaterials;
+        //private Panel panelExample;
+        // private TextBox textBoxCount;
+        //private ComboBox comboBoxMaterial;
         private Button buttonAddMaterial;
         private Button buttonDelete;
         private Button buttonSave;
         private Button buttonBack;
+        private DataGridView dataGridViewMaterials;
+        private DataGridViewTextBoxColumn Id;
+        private DataGridViewComboBoxColumn Material;
+        private DataGridViewTextBoxColumn Count;
+        private Button buttonDeleteMaterial;
     }
 }
