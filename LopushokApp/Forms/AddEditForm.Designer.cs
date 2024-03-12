@@ -326,6 +326,7 @@
             Font = new Font("Gabriola", 12F, FontStyle.Regular, GraphicsUnit.Point);
             Icon = (Icon)resources.GetObject("$this.Icon");
             Margin = new Padding(3, 6, 3, 6);
+            MaximumSize = new Size(1396, 855);
             MinimumSize = new Size(1396, 855);
             Name = "AddEditForm";
             Text = "Добавить продукт";
