@@ -29,7 +29,7 @@ namespace LopushokApp
         private void LoadDataFromFile()
         {
             Program.con.Open();
-            var stream = new StreamReader(Environment.CurrentDirectory+"\\materials_short_b_import.txt");
+            var stream = new StreamReader(Environment.CurrentDirectory + "\\..\\..\\..\\materials_short_b_import.txt");
             while (!stream.EndOfStream)
             {
                 string[] row = stream.ReadLine().Split(", ");
@@ -38,7 +38,7 @@ namespace LopushokApp
                 cmd.ExecuteNonQuery();
             }
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            stream = new StreamReader(Environment.CurrentDirectory + "\\products_import.txt", Encoding.GetEncoding(1251));
+            stream = new StreamReader(Environment.CurrentDirectory + "\\..\\..\\..\\products_import.txt", Encoding.GetEncoding(1251));
             while (!stream.EndOfStream)
             {
                 string[] row = stream.ReadLine().Split(", ");
@@ -47,8 +47,7 @@ namespace LopushokApp
                     $"values ('{row[0]}', '{row[1]}', {row[2]}, {image}, {row[4]}, {row[5]},  {row[6]})", Program.con);
                 cmd.ExecuteNonQuery();
             }
-
-            stream = new StreamReader(Environment.CurrentDirectory + "\\productmaterial_import.txt", Encoding.GetEncoding(1251));
+            stream = new StreamReader(Environment.CurrentDirectory + "\\..\\..\\..\\productmaterial_import.txt", Encoding.GetEncoding(1251));
             while (!stream.EndOfStream)
             {
                 string[] row = stream.ReadLine().Split(", ");
@@ -169,12 +168,12 @@ namespace LopushokApp
             Image image;
             try
             {
-                using Stream bmpStream = File.Open(Environment.CurrentDirectory + fileName, FileMode.Open);
+                using Stream bmpStream = File.Open(Environment.CurrentDirectory + "\\..\\..\\.." + fileName, FileMode.Open);
                 image = Image.FromStream(bmpStream);
             }
             catch (Exception _)
             {
-                using Stream bmpStream = File.Open(Environment.CurrentDirectory + "\\picture.png", FileMode.Open);
+                using Stream bmpStream = File.Open(Environment.CurrentDirectory + "\\..\\..\\..\\picture.png", FileMode.Open);
                 image = Image.FromStream(bmpStream);
             }
             return image;

@@ -59,8 +59,8 @@ namespace LopushokApp
         private void Load_Click(object? sender, EventArgs e)
         {
             var directory = Environment.CurrentDirectory;
+            directory = directory.Replace("\\bin\\Debug\\net6.0-windows", "");
             OpenFileDialog dialog = new OpenFileDialog();
-            dialog.InitialDirectory = directory;
             if (dialog.ShowDialog() != DialogResult.OK)
                 return;
             filePath = dialog.FileName;
