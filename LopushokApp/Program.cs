@@ -18,7 +18,7 @@ namespace LopushokApp
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            Form0 = new ApplicationContext(new ProductsForm(1));
+            Form0 = new ApplicationContext(new AuthorizationForm());
             Application.Run(Form0);
         }
 

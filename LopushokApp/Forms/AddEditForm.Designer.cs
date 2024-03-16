@@ -356,11 +356,6 @@
         private TextBox textBoxMinCost;
         private TextBox textBoxDescription;
         private Label label8;
-        // private FlowLayoutPanel panelMaterials;
-        //private Panel panelExample;
-        // private TextBox textBoxCount;
-        //private ComboBox comboBoxMaterial;
-        private Button buttonAddMaterial;
         private Button buttonDelete;
         private Button buttonSave;
         private Button buttonBack;

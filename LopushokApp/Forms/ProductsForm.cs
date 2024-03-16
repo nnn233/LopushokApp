@@ -7,10 +7,10 @@ namespace LopushokApp
     public partial class ProductsForm : Form
     {
         private bool isProgramEvent = false;
-        private int productId;
         private int start = 0;
         private int position = 1;
         private readonly int userGroup;
+        private readonly Color color = Color.FromArgb(206, 255, 249);
 
         public ProductsForm(int userGroup)
         {
@@ -53,8 +53,8 @@ namespace LopushokApp
                     };
                     if (userGroup == 1)
                     {
-                        panel.MouseClick += Panel_MouseClick;
-                        panel.BackColorChanged += Panel_BackColorChanged;
+                        panel.MouseDoubleClick += Panel_MouseDoubleClick;
+                        panel.Click += Panel_Click;
                     }
 
                     Label title = new Label
@@ -105,40 +105,25 @@ namespace LopushokApp
             else MessageBox.Show("В базе данных нет продуктов с указанными параметрами!");
         }
 
-        private void Panel_BackColorChanged(object? sender, EventArgs e)
+        private void Panel_Click(object? sender, EventArgs e)
         {
+            Panel panel = sender as Panel;
+            if (panel.BackColor == color)
+                panel.BackColor = Color.White;
+            else panel.BackColor = color;
             bool isHighlighted = false;
             foreach (Panel item in mainPanel.Controls)
             {
-                if (item.BackColor == Color.Green)
+                if (item.BackColor == color)
                     isHighlighted = true;
             }
             buttonChangeCost.Visible = isHighlighted;
         }
 
-        private void Panel_MouseClick(object? sender, MouseEventArgs e)
+        private void Panel_MouseDoubleClick(object? sender, MouseEventArgs e)
         {
-            Panel panel = (Panel)sender;
-            if (e.Button == MouseButtons.Left)
-            {
-                if (panel.BackColor == Color.Green)
-                    panel.BackColor = Color.White;
-                else panel.BackColor = Color.Green;
-            }
-            else
-            {
-                ContextMenuStrip contextMenu = new ContextMenuStrip();
-                ToolStripMenuItem menuItem = new("Редактировать");
-                menuItem.Click += new EventHandler(EditProduct);
-                contextMenu.Items.Add(menuItem);
-                productId = int.Parse(panel.Name);
-                panel.ContextMenuStrip = contextMenu;
-            }
-        }
-
-        private void EditProduct(object? sender, EventArgs e)
-        {
-            Form form = new AddEditForm(productId, userGroup);
+            Panel panel = sender as Panel;
+            Form form = new AddEditForm(int.Parse(panel.Name), userGroup);
             form.Text = "Редактировать продукт";
             Program.ChangeForm(this, form);
         }
@@ -275,7 +260,8 @@ namespace LopushokApp
                         sql += "order by product.title";
                         break;
                     case 2:
-                        sql += "order by product.title desc"; break;
+                        sql += "order by product.title desc";
+                        break;
                     case 3:
                         sql += "order by productionworkshopnumber";
                         break;
@@ -376,7 +362,7 @@ namespace LopushokApp
             List<int> ids = new List<int>();
             foreach (Panel item in mainPanel.Controls)
             {
-                if (item.BackColor == Color.Green)
+                if (item.BackColor == color)
                     ids.Add(int.Parse(item.Name));
             }
             var changeCost = new ChangeCostForm();

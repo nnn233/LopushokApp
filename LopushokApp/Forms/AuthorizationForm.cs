@@ -37,9 +37,9 @@ namespace LopushokApp
                     var user = new User()
                     {
                         Id = (int)reader.GetValue(0),
-                        UserGroup = (int)reader.GetValue(1),
-                        Login = (string)reader.GetValue(2),
-                        Password = (string)reader.GetValue(3)
+                        UserGroup = (int)reader.GetValue(3),
+                        Login = (string)reader.GetValue(1),
+                        Password = (string)reader.GetValue(2)
                     };
                     Program.con.Close();
                     return user;
