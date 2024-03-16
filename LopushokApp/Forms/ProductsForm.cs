@@ -1,6 +1,7 @@
 ﻿using LopushokApp.Entities;
 using Npgsql;
 using System.Globalization;
+using System.Text;
 
 namespace LopushokApp
 {
@@ -15,6 +16,7 @@ namespace LopushokApp
         public ProductsForm(int userGroup)
         {
             InitializeComponent();
+            //LoadDataFromFile();
             this.userGroup = userGroup;
             if (userGroup != 1)
                 buttonAddProduct.Visible = false;
@@ -22,6 +24,40 @@ namespace LopushokApp
             label1.Font = new Font(label1.Font, FontStyle.Underline);
             comboBoxFilter.Items.AddRange(GetTypes());
             SizeChanged += ProductsForm_SizeChanged;
+        }
+
+        private void LoadDataFromFile()
+        {
+            Program.con.Open();
+            var stream = new StreamReader(Environment.CurrentDirectory+"\\materials_short_b_import.txt");
+            while (!stream.EndOfStream)
+            {
+                string[] row = stream.ReadLine().Split(", ");
+                var cmd = new NpgsqlCommand("insert into material(title, materialtypeid, countinpack, unit, countinstock, mincount, cost) " +
+                    $"values ('{row[0]}', (select id from materialtype where title ='{row[1]}'), {row[2]}, '{row[3]}', {row[4]}, {row[5]},  {row[6]})", Program.con);
+                cmd.ExecuteNonQuery();
+            }
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            stream = new StreamReader(Environment.CurrentDirectory + "\\products_import.txt", Encoding.GetEncoding(1251));
+            while (!stream.EndOfStream)
+            {
+                string[] row = stream.ReadLine().Split(", ");
+                var image = (row[3] != "") ? "'" + row[3] + "'" : "null";
+                var cmd = new NpgsqlCommand("insert into product(title, articlenumber, mincostforagent, image, producttypeid, productionpersoncount, productionworkshopnumber) " +
+                    $"values ('{row[0]}', '{row[1]}', {row[2]}, {image}, {row[4]}, {row[5]},  {row[6]})", Program.con);
+                cmd.ExecuteNonQuery();
+            }
+
+            stream = new StreamReader(Environment.CurrentDirectory + "\\productmaterial_import.txt", Encoding.GetEncoding(1251));
+            while (!stream.EndOfStream)
+            {
+                string[] row = stream.ReadLine().Split(", ");
+                var cmd = new NpgsqlCommand("insert into productmaterial " +
+                    $"values ((select id from product where title ='{row[0]}'), (select id from material where title ='{row[1]}'), " +
+                    $"{row[2]})", Program.con);
+                cmd.ExecuteNonQuery();
+            }
+            Program.con.Close();
         }
 
         private void ProductsForm_SizeChanged(object? sender, EventArgs e)

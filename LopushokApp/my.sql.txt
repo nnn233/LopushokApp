@@ -187,3 +187,20 @@ CREATE TABLE IF NOT EXISTS public.user(
 	password VARCHAR(50) NOT NULL,
 	user_group INT REFERENCES usergroup(id)
 );
+
+INSERT INTO usergroup VALUES(1, 'Администратор'),
+(2, 'Менеджер');
+
+INSERT INTO public.user(login, password, user_group) VALUES('123456', '123456', 1),
+('654321', '654321', 2);
+
+INSERT INTO materialtype(title, defectedpercent) VALUES('Рулон', 0.5),
+('Пресс', 0.5),
+('Нарезка', 0.5),
+('Гранулы', 0.5);
+
+INSERT INTO materialtype(title, defectedpercent) VALUES('Три слоя', 0.5),
+('Два слоя', 0.5),
+('Детская', 0.5),
+('Один слой', 0.5),
+('Супер мягкая', 0.5);
