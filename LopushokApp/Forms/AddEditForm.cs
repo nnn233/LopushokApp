@@ -141,24 +141,19 @@ namespace LopushokApp
                 MessageBox.Show("Поля Артикул, Наименование и Минимальная стоимость для агента не могут быть пустыми!", "Заполните поля", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
-
-            try
-            {
-                var cost = string.Format("0,00", textBoxMinCost.Text);
-                if (decimal.Parse(cost) < 0)
-                {
-                    MessageBox.Show("Поле Минимальная стоимость для агента не может содержать отрицательное значение!", "Неверный ввод", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    return;
-                }
-            }
-            catch (FormatException)
-            {
-                MessageBox.Show("Поле Минимальная стоимость для агента может содержать только числовое значение с точностью до сотых!", "Неверный ввод", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
             if (!int.TryParse(textBoxArticle.Text, out int a))
             {
                 MessageBox.Show("Поле Артикул может содержать только цифры!", "Неверный ввод", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            if (!decimal.TryParse(textBoxMinCost.Text, out decimal c))
+            {
+                MessageBox.Show("Поле Минимальная стоимость дял агента может содержать только числовые значения с точностью до сотых, в качестве разделителя используйте запятую!", "Неверное значение поля", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            if (c < 0)
+            {
+                MessageBox.Show("Поле Минимальная стоимость дял агента не может содержать отрицательные значения!", "Неверное значение поля", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
             if ((!string.IsNullOrEmpty(textBoxPersonCount.Text) && !int.TryParse(textBoxPersonCount.Text, out int p))
@@ -290,19 +285,21 @@ namespace LopushokApp
         private void UpdateProduct()
         {
             Program.con.Open();
+            var cost = decimal.Parse(textBoxMinCost.Text).ToString("0.00", CultureInfo.GetCultureInfo("en-EN"));
             var cmd = new NpgsqlCommand($"update product set articlenumber ='{textBoxArticle.Text}', title = '{textBoxTitle.Text}'," +
                 $"producttypeid = {((comboBoxType.SelectedIndex == 0) ? "null" : comboBoxType.SelectedIndex)}, " +
                 $"description = {((textBoxDescription.Text == "") ? "null" : "'" + textBoxDescription.Text + "'")}, " +
                 $"image = {((filePath != null) ? "'" + filePath + "'" : "null")}, " +
                 $"productionpersoncount={((textBoxPersonCount.Text == "") ? "null" : textBoxPersonCount.Text)}, " +
                 $"productionworkshopnumber={((textBoxWorkshopNumber.Text == "") ? "null" : textBoxWorkshopNumber.Text)}, " +
-                $"mincostforagent ={textBoxMinCost.Text.Replace(',', '.')} where id={productId}", Program.con);
+                $"mincostforagent ={cost} where id={productId}", Program.con);
             cmd.ExecuteNonQuery();
             Program.con.Close();
         }
 
         private int AddProduct()
         {
+            var cost = decimal.Parse(textBoxMinCost.Text).ToString("0.00", CultureInfo.GetCultureInfo("en-EN"));
             Program.con.Open();
             var cmd = new NpgsqlCommand($"insert into product(articlenumber, title, producttypeid, description, image, productionpersoncount," +
                 $"productionworkshopnumber, mincostforagent) values ('{textBoxArticle.Text}', '{textBoxTitle.Text}', " +
@@ -311,7 +308,7 @@ namespace LopushokApp
                 $"{((filePath != null) ? "'" + filePath + "'" : "null")}, " +
                 $"{((textBoxPersonCount.Text == "") ? "null" : textBoxPersonCount.Text)}, " +
                 $"{((textBoxWorkshopNumber.Text == "") ? "null" : textBoxWorkshopNumber.Text)}, " +
-                $"{textBoxMinCost.Text.Replace(',', '.')}) returning id", Program.con);
+                $"{cost}) returning id", Program.con);
             int result = (int)cmd.ExecuteScalar();
             Program.con.Close();
             return result;
